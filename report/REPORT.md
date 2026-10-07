@@ -45,7 +45,7 @@ Use-case cụ thể (ADAS / robot / drone), trade-off và bước tiếp theo.
 Các lệnh tái tạo lại toàn bộ kết quả từ repo sạch.
 
 ```bash
-[ĐIỀN]
+python -m starter.projection --data-root data/kitti_mini --frame 000049
 ```
 
 ## 6. Khai báo sử dụng AI
@@ -54,4 +54,8 @@ Ghi rõ đã dùng công cụ AI nào, dùng vào việc gì, và bạn đã t�
 
 | Công cụ | Dùng cho việc gì | Bạn đã kiểm chứng thế nào |
 |---|---|---|
-| [ĐIỀN] | | |
+| chatgpt | Thiết kế lập trình hàm | Kiểm tra type đầu vào / ra |
+| chatgpt | Đọc hiểu hàm | Hỏi chức năng của hàm, cách hàm xử lý luồng<br> Viết docstring cho hàm |
+| chatgpt | Hỏi ý nghĩa của command | Chạy thử luôn |
+| chatgpt | Tra cứu thông tin<br> | Tin |
+| codex | Xác định bước làm tiếp theo | Đọc lại CHECKPOINT.md |

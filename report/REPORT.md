@@ -1,4 +1,4 @@
-# Báo cáo Day 6: [ĐIỀN tên đề tài ngắn]
+# Báo cáo Day 6: Auto-label support
 
 > Thay **mọi** ô có chữ ĐIỀN nằm trong ngoặc vuông bằng nội dung của bạn, xoá luôn cả dấu ngoặc vuông. Lệnh `python tools/check_submission.py` sẽ báo FAIL nếu còn sót bất kỳ chỗ nào.
 
@@ -84,9 +84,15 @@ bản đối chiếu nằm trong `results/repro_check/`.
 
 Nêu khi nào hệ thống hoặc phương pháp fail, vì sao fail, và liên hệ tới lớp nào trong 6 lớp debug: I/O, Geometry, Time, Preprocess, Model, Metric.
 
-![failure](../results/figures/fail_[ĐIỀN].png)
+![failure](../results/figures/fail_01_camera_angle_drift.png)
 
-[ĐIỀN]
+**Trường hợp này thuộc lỗi Geometry**
+
+Phân tích:
+- Thí nghiệm trong CP3 tiến hành bằng cách giả lập camera bị lệch
+- Khi camera không bị lệch, tức 0 độ, IOU là 0.9801, và giảm dần khi tăng độ lệch lên 1, 2, 3
+- Hiện tượng này xảy ra do phép chiếu 3D từ lidar sang 2D của camera bị mất đồng bộ, dẫn đến sai số tính toán, nên khoanh vùng sai
+- Trên thực tế, lidar và camera sẽ dễ bị mất đồng bộ trong các điều kiện như: Giá đỡ cảm biến bị lỏng, xe va chạm làm cảm biến xoay lệch, hoặc cảm biến được tháo lắp lại nhưng chưa đo và cập nhật lại vị trí, hướng lắp.
 
 ## 4. Khuyến nghị nếu triển khai thật
 

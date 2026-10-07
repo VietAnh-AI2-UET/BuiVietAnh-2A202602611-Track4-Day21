@@ -56,15 +56,11 @@ Chỉ lệch 1° đã làm tỷ lệ đạt giảm từ 100% xuống 25% (3/12 x
 tại 2° còn 2/12 xe và tại 3° không xe nào đạt. Đây là kết quả của mẫu
 và cách giả lập này, chưa phải kết luận cho mọi xe hoặc mọi dữ liệu.
 
-Phép giả lập quay 8 góc hộp 3D quanh trục y qua gốc camera, luôn từ tọa độ
-gốc, giữ nguyên `P2` và ảnh. Góc dương đưa điểm phía trước camera sang phải.
-Đây là sai lệch trong phép chiếu lên ảnh gốc, không phải ảnh chụp lại từ camera
-đã chuyển động. Chiếu đủ 8 góc rồi mới cắt hộp theo biên ảnh; diện tích dùng
-tọa độ liên tục, không cộng 1. Điều kiện chiếu là độ sâu > 0,1 m và mẫu số
-phép chiếu > 1e-12. Xe không chiếu được hoặc có hộp hoàn toàn ngoài ảnh vẫn
-được giữ trong mẫu, nhận IoU 0. Cả 48 dòng thực đo đều có trạng thái `ok`.
-Chỉ góc thay đổi; không dùng ngẫu nhiên (`randomness=none`, `seed=null`),
-không đo thời gian (`measure_latency=false`).
+Giả lập xoay 8 góc hộp 3D quanh trục đứng của camera từ tọa độ gốc,
+giữ nguyên ảnh và ma trận chiếu `P2`. Chỉ góc chiếu thay đổi, không mô phỏng
+ảnh chụp mới, không dùng ngẫu nhiên và không đo thời gian.
+Hộp được cắt theo biên ảnh sau khi chiếu; xe không chiếu được hoặc nằm hoàn
+toàn ngoài ảnh nhận IoU 0. Cả 48 kết quả đều có trạng thái `ok`.
 
 [Bảng tổng hợp](../results/topic_f_angle_sweep.csv) ·
 [Kết quả từng xe](../results/topic_f_object_results.csv) ·
@@ -96,31 +92,64 @@ Phân tích:
 
 ## 4. Khuyến nghị nếu triển khai thật
 
-Use-case cụ thể (ADAS / robot / drone), trade-off và bước tiếp theo.
-
-[ĐIỀN]
+- **Ứng dụng:** Hỗ trợ gán nhãn xe trong ảnh để tạo dữ liệu cho hệ thống hỗ trợ lái xe (ADAS); người gán nhãn kiểm tra và sửa hộp được chiếu từ dữ liệu 3D.
+- **Đánh đổi:** Giảm thao tác vẽ hộp thủ công nhưng cần đo chính xác vị trí và hướng tương đối giữa LiDAR và camera. Trong mẫu thử, lệch 1° đã làm tỷ lệ hộp đạt yêu cầu giảm từ 100% xuống 25%.
+- **Bước tiếp theo:** Kiểm tra lại vị trí, hướng lắp cảm biến; thử trên nhiều xe, khoảng cách và mức che khuất hơn; đo thời gian gán nhãn và sửa hộp để đánh giá lợi ích thực tế.
 
 ## 5. Cách chạy lại
 
-Thư mục thực thi là gốc repo `BuiVietAnh-2A202602611-Track4-Day21`.
-Đã dùng môi trường `.venv` có sẵn trên Windows: Python 3.11.9,
-NumPy 2.4.6, OpenCV 5.0.0, Matplotlib 3.11.2. Các thư viện cần cho thí nghiệm
-đều đã import thành công; không cài thêm dependency. `requirements.txt`
-ghi các yêu cầu thư viện của repo; thí nghiệm này chạy CPU.
+Các lệnh dưới đây dùng PowerShell trên Windows. Cần cài Python 3.10 trở lên;
+thí nghiệm chạy bằng CPU, không cần GPU. Dữ liệu `data/kitti_mini` có sẵn trong repo.
 
-Các lệnh PowerShell sau đã được chạy thành công:
+### Bước 1: Chuẩn bị môi trường
+
+Sau khi tải repo, mở PowerShell tại thư mục chứa repo và chạy:
+
+```powershell
+cd BuiVietAnh-2A202602611-Track4-Day21
+python -m venv .venv
+.venv\Scripts\python.exe -m pip install -r requirements.txt
+```
+
+Nếu đã đứng tại thư mục gốc của repo thì bỏ qua lệnh `cd`.
+Các bước tiếp theo gọi trực tiếp Python trong `.venv`, không cần kích hoạt môi trường.
+
+### Bước 2: Kiểm tra trước khi chạy
 
 ```powershell
 .venv\Scripts\python.exe -m unittest discover -s src/tests -v
 .venv\Scripts\python.exe -m src.topic_f_experiment --help
+```
+
+Lệnh đầu chạy các bài kiểm tra; hãy kiểm tra dòng tổng kết có `OK`.
+Lệnh sau hiển thị các tùy chọn của chương trình thí nghiệm.
+
+### Bước 3: Chạy thí nghiệm chính
+
+```powershell
 .venv\Scripts\python.exe -m src.topic_f_experiment --data-root data/kitti_mini --frames 000008 000010 000011 000004 000016 000049 --out-dir results
+```
+
+Sau khi lệnh hoàn tất, xem kết quả trong `results/`:
+
+- `topic_f_selected_objects.csv`: danh sách xe được chọn.
+- `topic_f_object_results.csv`: kết quả từng xe ở từng góc lệch.
+- `topic_f_angle_sweep.csv`: bảng tổng hợp theo góc lệch.
+- `topic_f_config.json`: cấu hình thí nghiệm.
+- `figures/topic_f_angle_sweep.png` và `figures/topic_f_example_comparison.png`: biểu đồ và ảnh so sánh.
+
+Các file cùng tên trong thư mục đầu ra sẽ được ghi đè khi chạy lại thành công.
+Nếu chọn dưới 10 xe đủ điều kiện, chương trình báo số xe và dừng trước khi ghi kết quả mới.
+
+### Bước 4: Kiểm tra khả năng chạy lại (tùy chọn)
+
+Chạy cùng cấu hình, lưu vào thư mục riêng:
+
+```powershell
 .venv\Scripts\python.exe -m src.topic_f_experiment --data-root data/kitti_mini --frames 000008 000010 000011 000004 000016 000049 --out-dir results/repro_check
 ```
 
-Kiểm tra tự động: 17 test đạt, bao gồm hình học, chọn mẫu, đo bốn góc,
-ghi file, tạo ảnh và lỗi khi chỉ có 9 xe. Lần chạy chính tạo 48 dòng chi tiết,
-4 dòng tổng hợp, 3 CSV, 1 JSON và 2 PNG. Lần chạy đối chiếu tạo lại cùng bộ
-file trong thư mục riêng. Đã dùng `Get-FileHash` kiểm tra như sau:
+So sánh nội dung các file CSV và JSON bằng mã SHA256 (mã dùng để kiểm tra file có giống nhau):
 
 ```powershell
 foreach ($name in @('topic_f_selected_objects.csv', 'topic_f_object_results.csv', 'topic_f_angle_sweep.csv', 'topic_f_config.json')) {
@@ -131,15 +160,14 @@ foreach ($name in @('topic_f_selected_objects.csv', 'topic_f_object_results.csv'
 }
 ```
 
-Không yêu cầu PNG giống từng byte; đã mở cả hai ảnh chính để kiểm tra
-chú thích và đối tượng. Các file kết quả có tên cố định sẽ được ghi đè khi
-chạy lại thành công. Nếu chọn dưới 10 xe, chương trình báo số xe và dừng
-trước khi ghi kết quả mới.
+Nếu các file giống nhau, lệnh in `SHA256 match` cho từng file; nếu khác nhau,
+lệnh báo `Mismatch`. Mở hai ảnh trong `results/figures/` để kiểm tra chú thích
+và các hộp trên ảnh; không yêu cầu file PNG giống từng byte giữa hai lần chạy.
 
-Lệnh demo CP2 đã ghi trước đó:
+### Chạy demo phép chiếu CP2 (tùy chọn)
 
 ```powershell
-python -m starter.projection --data-root data/kitti_mini --frame 000049
+.venv\Scripts\python.exe -m starter.projection --data-root data/kitti_mini --frame 000049
 ```
 
 ## 6. Khai báo sử dụng AI

@@ -1,0 +1,34 @@
+{
+  "angle_convention": "corners_original @ R.T; positive angle moves forward points right; P2 fixed",
+  "angles_deg": [
+    0.0,
+    1.0,
+    2.0,
+    3.0
+  ],
+  "box_convention": "continuous xyxy; project all 8 corners then clip to [0,width] x [0,height]; no +1",
+  "claim_pass_rate": 0.7,
+  "classes": [
+    "Car"
+  ],
+  "data_root": "data/kitti_mini",
+  "frame_ids": [
+    "000004",
+    "000008",
+    "000010",
+    "000011",
+    "000016",
+    "000049"
+  ],
+  "iou_threshold": 0.7,
+  "measure_latency": false,
+  "min_depth_m": 0.1,
+  "n_objects": 12,
+  "object_index_convention": "zero-based load_frame labels after DontCare removal",
+  "projection_denominator_epsilon": 1e-12,
+  "randomness": "none",
+  "range_filter": "none",
+  "rotation_axis": "camera y through camera origin; x right, y down, z forward",
+  "seed": null,
+  "selection": "Car; occluded=0; truncated=0; finite in-image label; positive finite 3D dimensions; original corners projectable"
+}

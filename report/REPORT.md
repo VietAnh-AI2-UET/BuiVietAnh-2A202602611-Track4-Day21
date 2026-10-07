@@ -10,8 +10,6 @@
 - **Dataset:** data/kitti_mini (thí nghiệm chính), data/synthetic (kiểm tra code)
 - **Các frame đã dùng:** 000008, 000010, 000011, 000004, 000016, 000049
 
-> Hãy viết ngắn: mỗi mục từ 3 đến 8 dòng, ưu tiên số liệu và hình ảnh.
-
 ## 1. Claim
 
 Một câu khẳng định kỹ thuật có thể kiểm chứng:
